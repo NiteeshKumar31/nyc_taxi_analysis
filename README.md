@@ -86,31 +86,36 @@ WITH ( {'column_name' 'column_type' [ 'column_ordinal' | 'json_path'] })
 - Below we've created a data source which will holds our file path infomation.
 - Through WITH clause we're explictly defining data type length and it's order to save amount of data/memory being processed. but make sure you specify column names correctly as it WITH clause is CASE SENSITIVE.
 - You can also check the data type lengths using the storage procedure ``sp_describe_first_result_set``
+- Just like above, explore other CSV files CALENDAR, VENDOR. TRIP TYPE is also same but with TAB as Field terminator.
   
-```
-SELECT
-    TOP 100 *
-FROM
-    OPENROWSET(
-        BULK 'taxi_zone.csv',
-        DATA_SOURCE = 'nyc_taxi_data_raw',
-        FORMAT = 'CSV',
-        PARSER_VERSION = '2.0',
-        HEADER_ROW = TRUE
-    ) 
-    WITH(
-        LocationID SMALLINT,
-        Borough VARCHAR(20),
-        Zone VARCHAR(50),
-        service_zone VARCHAR(20)
-    )AS [result]
+``` Refer to taxizone, calendar, vendor and trip tsv scripts in sql script folder ```
 
---- check datatype lengths
+###### Reading JSON type files
 
-EXEC sp_describe_first_result_set N' YOUR SELECT QUERY'
+- Coming to json file types, need to make sure we pass correct ROWTERMINATOR and FIELDTERMINATOR.
+- With the help of JSON VALUE and OPEN json functions we can query json files.
+-  CROSS APPLY works just like JOIN in SQL.
+- If there is nested json structure, just apply OPENJSON on inner json structure.
 
-```
-- Just like above explore other CSV files CALENDAR, VENDOR. TRIP TYPE is also same but with Field terminator as 'TAB'
+``` Refer to rate code and payment scripts in sql script folder ```
+
+
+###### Reading data inside folders
+
+- There are cases where in we need to read all files inside folder, in those cases we need to make use of wildcard characters '*', '**'
+- '*.csv will read only CSV files in folder.
+- '**' will read all file types present in the folder.
+- We can also make use of metadata functions like filepath and filename, these will give you total filepath name in datalake.
+  
+``` Refer to trip data green script in sql script folder ```
+
+###### Reading PARQUET and DELTA Files
+
+- The syntax is pretty much straight forward here, the only challenge is we can't query subfolder data of DELTA files.
+- If we want to check subfolder data, we can use WHERE clause to filter specific subfolder.
+- While reading delta files we have to specify the partition columns in with clause without fail.
+
+``` Refer to trip data scripts in sql script folder ```
   
  #### Data Ingestion
 
