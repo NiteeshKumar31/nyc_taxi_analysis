@@ -116,6 +116,88 @@ WITH ( {'column_name' 'column_type' [ 'column_ordinal' | 'json_path'] })
 - While reading delta files we have to specify the partition columns in with clause without fail.
 
 ``` Refer to trip data scripts in sql script folder ```
+
+###### Data Virtualisation
+
+- The drawbacks of OPENROWSET function leads us to data virtualisation, we can only query data using OPENROWSET function, but for reporting we need to store this data somewhere as either tables or views.
+- with data virtualisation, we will create external tables on top of our data lake.
+- To create external tables, we need external data source and data formats.
+- External data source wil hold the source path info, data formats will define the file schema that we used to define OPENROWSET function.
+
+```
+-- Create an external file format for DELIMITED (CSV/TSV) files.
+CREATE EXTERNAL FILE FORMAT file_format_name
+WITH (
+        FORMAT_TYPE = DELIMITEDTEXT
+    [ , FORMAT_OPTIONS ( <format_options> [ ,...n  ] ) ]
+    [ , DATA_COMPRESSION = {
+           'org.apache.hadoop.io.compress.GzipCodec'
+        }
+     ]);
+
+<format_options> ::=
+{
+    FIELD_TERMINATOR = field_terminator
+    | STRING_DELIMITER = string_delimiter
+    | FIRST_ROW = integer -- Applies to: Azure Synapse Analytics and SQL Server 2022 and later versions
+    | DATE_FORMAT = datetime_format
+    | USE_TYPE_DEFAULT = { TRUE | FALSE }
+    | ENCODING = {'UTF8' | 'UTF16'}
+    | PARSER_VERSION = {'parser_version'}
+
+}
+
+CREATE EXTERNAL DATA SOURCE <data_source_name>
+WITH
+  ( [ LOCATION = '<prefix>://<path>[:<port>]' ]
+    [ [ , ] CONNECTION_OPTIONS = '<key_value_pairs>'[,...]]
+    [ [ , ] CREDENTIAL = <credential_name> ]
+    [ [ , ] PUSHDOWN = { ON | OFF } ]
+  )
+[ ; ]
+```
+- Let's create external data source and external data formats of CSV, TSV, DELTA, PARQUET using above synatax.
+- We will follow industry standards, let's create a database ```LDW ``` and schema ```BRONZE```.
+- Once we have both database and schema we're good to go.
+
+```
+-- Create a new external table
+CREATE EXTERNAL TABLE { database_name.schema_name.table_name | schema_name.table_name | table_name }
+    ( <column_definition> [ ,...n ] )
+    WITH (
+        LOCATION = 'folder_or_filepath',
+        DATA_SOURCE = external_data_source_name,
+        [ FILE_FORMAT = external_file_format_name ]
+        [ , <reject_options> [ ,...n ] ]
+    )
+[;]
+
+<reject_options> ::=
+{
+    | REJECT_TYPE = value | percentage
+    | REJECT_VALUE = reject_value
+    | REJECT_SAMPLE_VALUE = reject_sample_value,
+    | REJECTED_ROW_LOCATION = '/REJECT_Directory'
+}
+
+<column_definition> ::=
+column_name <data_type>
+    [ COLLATE collation_name ]
+    [ NULL | NOT NULL ]
+```
+
+- Create external tables for all demilimited files(taxi zone, vendor, calendar, trip data)
+- Create external tables for PARQUET and DELTA file types as well.
+- Create external views for payment and rate code json files. Creating a view is as simple as create a table in SQL
+- A view is a virtual table that is created by using SELECT statement. 
+
+```
+CREATE VIEW SCHEMA.TABLE_NAME
+AS
+SELECT STATEMENT
+```
+
+``` Refer to the scripts in LDW folder in sql scripts ```
   
  #### Data Ingestion
 
