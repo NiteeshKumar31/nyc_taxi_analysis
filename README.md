@@ -1,13 +1,15 @@
 # NYC Taxi Analysis
 
 ## Project Overview
-In this project we will be analysing NYC taxi data using Azure Synapse Analytics. Synapse Analytics is a Limitless analytics service that brings together data integration, enterprise data warehousing and big data analytics. Azure Synpase Analytics is one such service that solves all data engineering problems of using multiple services on their day to day activities, with the help of this single azure service we can perfom all 3 operations of Integration, transformation, Reporting.
+In this project we will be analysing NYC taxi data using Azure Synapse Analytics. Synapse Analytics is a Limitless analytics service that brings together data integration, enterprise data warehousing and big data analytics. Azure Synpase Analytics is one such service that solves all data engineering problems of using multiple services on their day to day activities, with the help of synapse we can perfom all 3 ETL operations Integration, transformation, Reporting.
 
 ## Tools
 
 - Azure Synapse Analytics
 - Azure Cosmos DB
 - Azuer Storage service
+
+![Synapse_analytics_workflow](snips/Synapse_analytics_workflow.jpg)
 
 ### Environment Setup
 
@@ -16,6 +18,8 @@ In this project we will be analysing NYC taxi data using Azure Synapse Analytics
 - Create and configure Storagee Account(Blob Storage and ADLS GEN2).
 - Create and configure Azure Synapse Analytics.
 - Download and configure Power BI.
+
+![resource_group](snips/resource_group.jpg)
 
 ### Project Implementation
 
@@ -26,7 +30,7 @@ In this project we will be analysing NYC taxi data using Azure Synapse Analytics
 
 #### Solution Architecture
 
--- Insert synapse architecture snip here
+![Solution_Architecture_Serverless_Sql_pool](snips/Solution_Architecture_Serverless_Sql_pool.jpg)
 
 
 ##### Data Discovery
@@ -111,7 +115,7 @@ WITH ( {'column_name' 'column_type' [ 'column_ordinal' | 'json_path'] })
 
 ###### Reading PARQUET and DELTA Files
 
-- The syntax is pretty much straight forward here, the only challenge is we can't query subfolder data of DELTA files.
+- The syntax is pretty much straight forward here, the only challenge is we can't query subfolder data of DELTA files as it's metadata will be store in the first folder.
 - If we want to check subfolder data, we can use WHERE clause to filter specific subfolder.
 - While reading delta files we have to specify the partition columns in with clause without fail.
 
@@ -207,7 +211,7 @@ SELECT STATEMENT
    3. Ability to query the ingested data using SQL
    4. Ingestion using pay-per-query model
   
--- data ingestion snip
+![data_ingestion](snips/data_ingestion.jpg)
 
 - Now coming to data ingestion, we will ingest all data in PARQUET format.
 - Let's create tables in SILVER layer using CETAS statements by using existing BROZE external tables we created.
@@ -217,9 +221,9 @@ SELECT STATEMENT
 
 ``` Refer to the scripts in LDW folder in sql scripts ```
 
- #### Data Transformation
+ #### Data Transformation using Serverless SQL Pool
 
- -- Data transfomration snip
+ ![data_transformation](snips/data_transformation.jpg)
 
   - Key objectives in data Transfomation
 
@@ -257,6 +261,45 @@ SELECT STATEMENT
 - Build the logic using gold tables and views
 
 ``` Refer to create_gold_trip_data_green script in LDW folder ```
+
+#### Automating ETL using Synapse Pipelines
+
+- Till now we have transformed our data in step wise sepereately by writing code in T-sql and executed them manually. In real world projects it's not the case, process should be made automatic to reduce manual intervention and to avoid human errors.
+- Now we will automate our ETL processes using Synapse Pipelines.
+- Synapse pipelines makes use of Azure Data factory but comes with some additional requirements.
+- Creating pipelinese will require two things, linked service and dataset.
+- Linked service will make connection among your source data and the ETL tool, In this case Azure Synapse Pipelines.
+
+![linked_services](snips/linked_services.jpg)
+
+- As our data is stored in ADLS GEN2 containers, we need to create linked service among ADLS and Synapse.
+- Once we create linked service, we can now access the files and data in ADLS, now we need to create a dataset. We can either create it externally or we can create while we're creating our pipeline activites.
+- A dataset is something that will hold your source/destination information. 
+- We will create a single pipeline for all delimited files processing
+
+![create_silver_taxi_zone](snips/pl_create_silver_taxi_zone.jpg)
+
+![pl_usp_create_silver_taxi_zone](snips/pl_usp_create_silver_taxi_zone.jpg)
+
+![pl_create_silver_tables](snips/pl_create_silver_tables.jpg)
+
+- We will create sepereate pipeline for silver trip data as the data is here in partitioned format.
+
+![pl_create_silver_trip_data_green](snips/pl_create_silver_trip_data_green.jpg)
+
+- As we now automated our processing till silver layer and let's move on to Gold layer
+- Create the pipelines just like above for GOLD layer as well, create one for delimited files and other for PARQUET
+
+![create_gold_trip_data_green](snips/pl_create_gold_trip_data_green.jpg)
+
+- Once we have all pipelines, let's create a dependency among them.
+- Only when silver pipelines are completed without any issues, we want our GOLD pipelines to run
+
+![execute_all_pipelines](snips/pl_execute_all_pipelines.jpg)
+
+- Till now we're executing our pipelines manually by using DEBUG, to automate execution we can create triggers to our pipelines.
+- Schedule trigger can be the best choice as we're not inserting any files in source folders.
+
   
  #### Data Reporting
 
