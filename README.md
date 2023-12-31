@@ -206,15 +206,58 @@ SELECT STATEMENT
    2. Ingested data to be stored as tables/ views
    3. Ability to query the ingested data using SQL
    4. Ingestion using pay-per-query model
+  
+-- data ingestion snip
+
+- Now coming to data ingestion, we will ingest all data in PARQUET format.
+- Let's create tables in SILVER layer using CETAS statements by using existing BROZE external tables we created.
+- As we have Trip data green data partitoned in CSV format, we can't create partitions directly using external table syntax.
+- To store the Trip data green CSV partitoned data, we will create a STORED PROCEDURE and pass the partition values year, month as parameters.
+- Create exact replica views for external views.
+
+``` Refer to the scripts in LDW folder in sql scripts ```
 
  #### Data Transformation
 
-  - Key objectives in data ingestion
+ -- Data transfomration snip
+
+  - Key objectives in data Transfomation
+
     1. Join the key information required for reporting to create a new table.
     2. Join the key information required for Analysis to create a new table.
     3. Must be able to analyze the transformed data via T-SQL
     4. Transformed data must be stored in columnar format (i.e., Parquet)
+       
+- Now coming to data transformation, we will make use of silver tables and built aggregation on top of it and store tables in gold layer.
+- we have 2 main business requirements in tranformation.
 
+###### Business Requirements (1)
+
+  1. Campaign to encourage credit card payments
+  2. Trips made using credit card/ cash payments
+  3. Payment behaviour during days of the week/ weekend
+  4. Payment behaviour between boroughs
+
+- Inorder to achieve the above business requirements we need to join silver tables.
+- Trip data will give you year, month, trip date.
+- Taxi zone will give borough
+- Calender for the date info
+- Build the logic using above tables and validate the data.
+
+###### Business Requirements (2)
+
+  1. Identify taxi demand
+  2. Demand based on borough
+  3. Demand based on day of the week/ weekend
+  4. Demand based on trip type (i.e., Street hail/ Despatch)
+  5. Trip distance, trip duration, total fare amount etc per day/ borough
+
+- Create a view on top of Taxi data green data by using stored procedure in GOLD schema.
+- On we have the view, we can now move on to business requirements-2
+- Build the logic using gold tables and views
+
+``` Refer to create_gold_trip_data_green script in LDW folder ```
+  
  #### Data Reporting
 
   - Key objectives in data ingestion
