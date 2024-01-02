@@ -300,6 +300,25 @@ SELECT STATEMENT
 - Till now we're executing our pipelines manually by using DEBUG, to automate execution we can create triggers to our pipelines.
 - Schedule trigger can be the best choice as we're not inserting any files in source folders.
 
+ #### Data Transformation using Spark Pool
+
+![Solution_Architecture_Spark_pool.jpg](snips/Solution_Architecture_Spark_pool.jpg)
+
+ - As of now we have transformed our data using serverless sql pool. With serverless sql pool we can't process larger datasets and T-SQL logic will be complex.
+ - With Spark pool, we can process Terabytes if not Petabytes of data with ease.
+
+![spark_pool.jpg](snips/spark_pool.jpg)
+
+ - In Spark pool we can write logic in Pyspark, scala, R, SQL.
+ - The best thing with Spark pool is that the metadata of tables is stored in MetaStore. If you want to query the tables and use for reporting we can use serverless sql pool.
+ - If you want to perform any DML operations on tables, we can't do it from serverless sql pool, we need to go back to spark notebooks and do it.
+ - Let's now perform some transformation on Trip data green that stored in silver container, Let's create a table Trip data green agg which we will hold the partioned by year and month.
+
+``` Refer to databricks notebook in notebook folder ```
+
+ - Let's create a pipeline for the same and add a trigger to it so that we can run it automatically.
+
+![pl_create_gold_trip_data_green_agg.jpg](snips/pl_create_gold_trip_data_green_agg.jpg)
   
  #### Data Reporting
 
