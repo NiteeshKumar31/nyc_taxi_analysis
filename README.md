@@ -262,6 +262,7 @@ SELECT STATEMENT
 
 ``` Refer to create_gold_trip_data_green script in LDW folder ```
 
+
 #### Automating ETL using Synapse Pipelines
 
 - Till now we have transformed our data in step wise sepereately by writing code in T-sql and executed them manually. In real world projects it's not the case, process should be made automatic to reduce manual intervention and to avoid human errors.
@@ -322,8 +323,23 @@ SELECT STATEMENT
   
  #### Data Reporting
 
-  - Key objectives in data ingestion
+  - Key objectives in data Reporting
     1. Taxi Demand
     2. Credit Card Campaign
     3. Operational Reporting
+   
+ - Azure Synapse and Power BI are closely integreated than one can ever imagine.
+ - Download powerBI desktop and install it, PowerBI doesn't take personal emails to login.
+ - If we want to acces it, we need to create an user in Azure.
+ - New user should have acessess to Resource group, Synapse workspace and ADLS.
+ - We can make use of free 60days PowerBI Pro plan for reporting.
+ - Once user is created and enrolled for Free plan, create a workspace in PowerBI for Publishing.
+ - Create a linked service among powerBI and synapse.
+ - The best thing about Synapse is we can build reports in synpase itself instead of using powerBI desktop by making use of the datasets.
+ - The draw back is we can't perform modeling or transformation in synapse directly, we have to use power BI only.
+ - Connect to Synapse workspace using synpase endpoint, it will give you all the databases existed in synapse workspace.
+ - Load all the tables required into powerBI from databases and start building reports.
+
+[Campain_Demand_report](https://app.powerbi.com/links/A7AJTtY3iD?ctid=fe2afe3d-4d4c-4d67-9302-813bdc2e867a&pbi_source=linkShare)
+
    
