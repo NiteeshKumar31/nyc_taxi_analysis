@@ -320,6 +320,32 @@ SELECT STATEMENT
  - Let's create a pipeline for the same and add a trigger to it so that we can run it automatically.
 
 ![pl_create_gold_trip_data_green_agg.jpg](snips/pl_create_gold_trip_data_green_agg.jpg)
+
+#### Azure Synapse Link
+
+- Before we move into data reporting let's discuss once about Azure Synapse link.
+- Any traditional Data Engineering architecture consits of OLTP as source and OLAP as destination.
+- As we already know OLTP is row oriented and OLAP is column oriented storage formats.
+- In order to replicate data from OLTP to OLAP or to create business aggregations on top of OLTP data, we require ETL/ELT tools.
+- Can't we directly replicate OLTP data into OLAP database? Yes we can, and the solution from Azure for this requirement is Synapse Link.
+
+![synapse_link](snips/synapse_link.jpg)
+
+- Synpase link will help you move your row oriented OLTP data into column oriented OLAP data in near real time.
+- Synpase link as of now only support CosmosDB(MangoDB API and SQL API).
+  
+![synapse_link_cosmosDB](snips/synapse_link_cosmosDB.jpg)
+
+- Let's first create Azure Cosmos DB in our resource group.
+- Create a linked service among synapse and cosmosDB.
+- As NYC taxi doesn't provide real time data, let's insert some records manually in CosmosDB container.
+- Once we have data in container, come to synapse workspace and refresh once, under linked section you could see CosmosDB connection.
+- As we are now in azure synapse workspace, which containes both Serverless sql pool and Spark pool.
+- Now Query the Heartbeat table data using serverless sql pool db and you can see the data that you inserted in cosmosDB earlier.
+- Along with Insert and update, we can also perfrom delete operations. The changes will be reflected in synapse workspace.
+- We can also crete dataframes using Spark pool and transform as required for BI reporting.
+
+``` Refer to CosmosDB folder in Sql scripts, synpase folder in Notebooks ```
   
  #### Data Reporting
 
