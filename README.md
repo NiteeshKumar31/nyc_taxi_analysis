@@ -1,7 +1,7 @@
 # NYC Taxi Analysis
 
 ## Project Overview
-In this project we will be analysing NYC taxi data using Azure Synapse Analytics. Synapse Analytics is a Limitless analytics service that brings together data integration, enterprise data warehousing and big data analytics. Azure Synpase Analytics is one such service that solves all data engineering problems of using multiple services on their day to day activities, with the help of synapse we can perfom all 3 ETL operations Integration, transformation, Reporting.
+In this project we will be analysing NYC taxi data using Azure Synapse Analytics. Synapse Analytics is a Limitless analytics service that brings together data integration, enterprise data warehousing and big data analytics. Azure Synpase Analytics is one such service that solves all data engineers problems of using multiple services on their day to day activities, with the help of synapse we can perfom all 3 ETL operations Integration, transformation, Reporting.
 
 ## Tools
 
